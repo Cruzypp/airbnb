@@ -19,7 +19,7 @@ defmodule Airbnb.MixProject do
 
   defp deps do
     [
-      {:csv, "~> 3.2"}
+      {:nimble_csv, "~> 1.2"}
     ]
   end
 end

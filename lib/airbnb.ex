@@ -1,18 +1,26 @@
 defmodule Airbnb do
-  @moduledoc """
-  Documentation for `Airbnb`.
-  """
+  NimbleCSV.define(MyParser, separator: ",", escape: "\"")
 
-  @doc """
-  Hello world.
+  def aggr_count_properties(path \\ "ejemplo.csv") do
+    datos =
+      File.stream!(path)
+      |> MyParser.parse_stream()
+      |> Enum.to_list()
 
-  ## Examples
+    filas = tl(datos)
 
-      iex> Airbnb.hello()
-      :world
+    neighbourhood =
+      Enum.map(filas, fn fila -> Enum.at(fila, 28) end)
 
-  """
-  def hello do
-    :world
+    property_type =
+      Enum.map(filas, fn fila -> Enum.at(fila, 32) end)
+
+    combinados =
+      Enum.zip(neighbourhood, property_type)
+      |> Enum.map(fn {zona, tipo} -> "(Colonia:#{zona} - Tipo:#{tipo})" end)
+
+    lista_f = Enum.join(combinados, ", ")
+
+    IO.inspect(lista_f)
   end
 end
