@@ -25,59 +25,59 @@ defmodule Airbnb do
     |> IO.puts()
   end
 
-  def offer_by_neighbourhood(path \\ "listings_sample_500.csv") do
-    registros =
-      File.stream!(path)
-      |> CSVParser.parse_stream()
-      |> Enum.to_list()
+  # def offer_by_neighbourhood(path \\ "listings_sample_500.csv") do
+  #   registros =
+  #     File.stream!(path)
+  #     |> CSVParser.parse_stream()
+  #     |> Enum.to_list()
 
-    contenido = tl(registros)
+  #   contenido = tl(registros)
 
-    colonias = Enum.map(contenido, &Enum.at(&1, 28))
-    capacidad_raw = Enum.map(contenido, &Enum.at(&1, 34))
-    precios_raw = Enum.map(contenido, &Enum.at(&1, 40))
+  #   colonias = Enum.map(contenido, &Enum.at(&1, 28))
+  #   capacidad_raw = Enum.map(contenido, &Enum.at(&1, 34))
+  #   precios_raw = Enum.map(contenido, &Enum.at(&1, 40))
 
-    capacidades =
-      Enum.map(capacidad_raw, fn valor ->
-        case Integer.parse(valor) do
-          {numero, _} -> numero
-          :error -> 0
-        end
-      end)
+  #   capacidades =
+  #     Enum.map(capacidad_raw, fn valor ->
+  #       case Integer.parse(valor) do
+  #         {numero, _} -> numero
+  #         :error -> 0
+  #       end
+  #     end)
 
-    precios =
-      Enum.map(precios_raw, fn precio ->
-        limpio = String.replace(precio, "$", "") |> String.replace(",", "")
-        case Float.parse(limpio) do
-          {numero, _} -> round(numero)
-          :error -> 0
-        end
-      end)
+  #   precios =
+  #     Enum.map(precios_raw, fn precio ->
+  #       limpio = String.replace(precio, "$", "") |> String.replace(",", "")
+  #       case Float.parse(limpio) do
+  #         {numero, _} -> round(numero)
+  #         :error -> 0
+  #       end
+  #     end)
 
-    datos_combinados = Enum.zip([colonias, capacidades, precios])
+  #   datos_combinados = Enum.zip([colonias, capacidades, precios])
 
-    acumulados_por_colonia =
-      Enum.reduce(datos_combinados, %{}, fn {colonia, capacidad, precio}, acumulador ->
-        Map.update(acumulador, colonia, {capacidad, precio}, fn {cap_total, prec_total} ->
-          {cap_total + capacidad, prec_total + precio}
-        end)
-      end)
+  #   acumulados_por_colonia =
+  #     Enum.reduce(datos_combinados, %{}, fn {colonia, capacidad, precio}, acumulador ->
+  #       Map.update(acumulador, colonia, {capacidad, precio}, fn {cap_total, prec_total} ->
+  #         {cap_total + capacidad, prec_total + precio}
+  #       end)
+  #     end)
 
-    salida =
-      acumulados_por_colonia
-      |> Enum.map(fn {colonia, {total_capacidad, total_precio}} ->
-        promedio =
-          if total_capacidad > 0 do
-            Float.round(total_precio / total_capacidad, 2)
-          else
-            0
-          end
+  #   salida =
+  #     acumulados_por_colonia
+  #     |> Enum.map(fn {colonia, {total_capacidad, total_precio}} ->
+  #       promedio =
+  #         if total_capacidad > 0 do
+  #           Float.round(total_precio / total_capacidad, 2)
+  #         else
+  #           0
+  #         end
 
-        "(Colonia: #{colonia}, Total hospedaje: #{total_capacidad}, Precio promedio por persona: $#{promedio})\n"
-      end)
-      |> Enum.join(" ")
+  #       "(Colonia: #{colonia}, Total hospedaje: #{total_capacidad}, Precio promedio por persona: $#{promedio})\n"
+  #     end)
+  #     |> Enum.join(" ")
 
-    IO.puts(salida)
-  end
+  #   IO.puts(salida)
+  # end
 
 end
